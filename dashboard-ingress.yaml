@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kibana-test
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$request_uri"
+spec:
+  rules:
+  - host: echo.int.ihorbunov.com
+    http:
+      paths:
+      - backend:
+          serviceName: kibana-test
+          servicePort: 5601
+        path: /
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: authproxy-oauth2-proxy
+  namespace: ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: echo.int.ihorbunov.com
+    http:
+      paths:
+      - backend:
+          serviceName: authproxy-oauth2-proxy
+          servicePort: 80
+        path: /oauth2
